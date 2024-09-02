@@ -203,8 +203,17 @@ public class Menu {
 
                                             if (batchChoice > 0 && batchChoice <= batches.size()) {
                                                 String selectedBatch = batches.get(batchChoice - 1);
-                                                int count = trainerDAO.getEnrolledCandidatesCount(selectedBatch);
-                                                System.out.println("Number of candidates enrolled in " + selectedBatch + ": " + count);
+
+                                                // Retrieve and display candidate details
+                                                List<User> candidates = trainerDAO.getCandidatesInBatch(selectedBatch);
+                                                if (candidates.isEmpty()) {
+                                                    System.out.println("No candidates enrolled in " + selectedBatch);
+                                                } else {
+                                                    System.out.println("Candidates enrolled in " + selectedBatch + ":");
+                                                    for (User candidate : candidates) {
+                                                        System.out.println("Name: " + candidate.getName() + ", Email: " + candidate.getEmail());
+                                                    }
+                                                }
                                             } else {
                                                 System.out.println("Invalid selection. Please try again.");
                                             }

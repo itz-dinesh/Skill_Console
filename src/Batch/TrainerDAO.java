@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrainerDAO {
     
@@ -23,7 +25,7 @@ public class TrainerDAO {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                return new Trainer(username, query);
+                return new Trainer(username, username); // Use username for the name here or adjust accordingly
             }
             return null; // Return null if no match found
         }
@@ -41,5 +43,24 @@ public class TrainerDAO {
             }
             return 0;
         }
+    }
+
+    // Method to get the list of candidates in a batch
+    public List<User> getCandidatesInBatch(String batchName) throws SQLException {
+        List<User> candidates = new ArrayList<>();
+        String query = "SELECT users.name, users.email FROM users " +
+                       "JOIN batches ON users.email = batches.candidate_email " +
+                       "WHERE batches.batch_name = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, batchName);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                candidates.add(new User(name, email, null, null, null, null, null));
+            }
+        }
+        return candidates;
     }
 }
